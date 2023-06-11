@@ -89,3 +89,7 @@ function pageGetSelect() {
         m.route.set('/add')
     }
 })();
+
+window.onload = () => {
+    console.log("Page loaded")
+}
