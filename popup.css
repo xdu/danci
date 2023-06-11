@@ -1,0 +1,26 @@
+body {
+    width: 55rem;
+    zoom: 80%;
+}
+
+ul {
+    list-style-type: none;
+    padding-inline-start: 0;
+    margin: 1rem 0;
+}
+
+li {
+    padding: 0.25rem;
+}
+
+li:nth-child(odd) {
+    background: #80808030;
+}
+
+li:nth-child(even) {
+    background: #ffffff;
+}
+
+form, input, textarea {
+    padding: 5;
+}
