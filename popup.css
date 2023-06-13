@@ -51,12 +51,17 @@ form, input, textarea {
 
 .card-sub {
   color: #8c8c8c;
-  font-weight: 400;
-  letter-spacing: 2px;
+  font-size: 0.9em;
+  letter-spacing: 1px;
 }
 
 .card-text {
   font-size: 0.9em;
   letter-spacing: 1px;
   opacity: 0.9;
+}
+
+.button-danger {
+  background-color: red;
+  border-color: white;
 }

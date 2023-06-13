@@ -26,11 +26,17 @@ var AddNew = {
                     value: form.term,
                     oninput: function(e) { form.term = e.target.value }
                 } ),
-                m("label", "Desc"),
+                m(".float-right", [
+                    m("button.button", [
+                        m("i", {class: "fa fa-google"}),
+                        m("#", "Translate")    
+                    ]),
+                ]),
+                m("label", "Desc"),             
                 m("input[type=text][name=desc]", {
-                    value: form.desc,
-                    oninput: function(e) { form.desc = e.target.value }
-                }),
+                        value: form.desc,
+                        oninput: function(e) { form.desc = e.target.value }
+                    }),
                 m("label", "Examples"),
                 m("textarea[rows=5][cols=20][name=examples]", {
                     value: form.examples,
@@ -47,6 +53,11 @@ var ShowList = {
         return m("div.container", [
             terms.map(function (item) {
                 return m("div.card", [
+                    m(".float-right", [
+                        m("a", { href: "#!/edit" }, [
+                            m("i", { class: "fa fa-edit" })
+                        ])
+                    ]),
                     m("div.card-title", item.term),
                     m("div.card-sub", item.desc),
                     m("div.card-text", item.examples)
@@ -54,6 +65,12 @@ var ShowList = {
             }),
             m("button.button", { onclick: getNewFileHandle }, "Export"),
         ]) 
+    }
+}
+
+var EditTerm = {
+    view: function() {
+        return m("button.button", { class: "button-danger"})
     }
 }
 
@@ -71,13 +88,14 @@ async function getNewFileHandle(e) {
         filename: "vocabulary.md",
         saveAs: false
       });
-    
+
     window.close()
 }
 
 m.route(root, "/list", {
     "/list": ShowList,
-    "/add": AddNew
+    "/add": AddNew,
+    "/edit": EditTerm
 })
 
 async function getActiveTabId() {
