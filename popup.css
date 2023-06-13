@@ -1,6 +1,7 @@
 body {
-    width: 55rem;
-    zoom: 80%;
+    width: 50rem;
+    zoom: 85%;
+    font-family: "Roboto", Arial;
 }
 
 ul {
@@ -23,4 +24,39 @@ li:nth-child(even) {
 
 form, input, textarea {
     padding: 5;
+}
+
+.card {
+    border-radius: 5px;
+    color: #7450b9;
+    display: inline-block;
+    margin-top: 10px;
+    margin-down: 10px;
+    position: relative;
+    width: 100%;
+}
+
+.card-title {
+    font-weight: 600;
+}
+
+.card-title:before {
+    content: "•"; 
+    color: red;
+    display: inline-block; 
+    width: 1em;
+    margin-left: -1em
+    font-size: 1.1em;
+}
+
+.card-sub {
+  color: #8c8c8c;
+  font-weight: 400;
+  letter-spacing: 2px;
+}
+
+.card-text {
+  font-size: 0.9em;
+  letter-spacing: 1px;
+  opacity: 0.9;
 }

@@ -1,34 +1,41 @@
-var root = document.body
-var word, annotation, examples
-var book = [{
-    word: "Hello",
-    annotation: "Hi",
-    exemples: "Hello, world"
-}]
+let root = document.body
+let terms = []
+let form = { term: "", desc: "", examples: "" } 
 
 var AddNew = {
     view: function() {
-        return m("form", {
+        return m("form.container", {
             onsubmit: function(e) {
                 e.preventDefault();
-
-                console.log("Send message");
-                chrome.runtime.sendMessage({id: "save", payload : {
-                    word, annotation, examples
-                }}).then((list) => {
-                    book = list
-                    m.route.set('/list')
+                if (! form.term) {
+                    alert("Term must be not empty.")
+                    return
+                }
+                chrome.storage.local.get(["terms"]).then((results) => {
+                    terms = results.terms || []
+                    terms.push(form)
+                    chrome.storage.local.set({ "terms" : terms })
+                }).then(() => {
+                    m.route.set("/list")
                 })
-
             }
         }, [
             m("fieldset", [ 
-                m("label", "Word"),
-                m("input.input[type=text][name=word]", {value: word} ),
-                m("label", "Annotation"),
-                m("input[type=text][name=annotation]", ),
+                m("label", "Term"),
+                m("input.input[type=text][name=term]", {
+                    value: form.term,
+                    oninput: function(e) { form.term = e.target.value }
+                } ),
+                m("label", "Desc"),
+                m("input[type=text][name=desc]", {
+                    value: form.desc,
+                    oninput: function(e) { form.desc = e.target.value }
+                }),
                 m("label", "Examples"),
-                m("textarea[rows=5][cols=20][name=examples]", {value: examples}),
+                m("textarea[rows=5][cols=20][name=examples]", {
+                    value: form.examples,
+                    oninput: function(e) { form.examples = e.target.value }
+                }),
                 m("button[type=submit]", { class: "button button-outline" }, "Save")
             ])
         ])
@@ -37,23 +44,35 @@ var AddNew = {
 
 var ShowList = {
     view: function() {
-        return m("table", [
-            m("thead", [
-                m("tr", [
-                    m("th", "Word"),
-                    m("th", "Desc"),
-                    m("th", "Ex.")
+        return m("div.container", [
+            terms.map(function (item) {
+                return m("div.card", [
+                    m("div.card-title", item.term),
+                    m("div.card-sub", item.desc),
+                    m("div.card-text", item.examples)
                 ])
-            ]),
-            m("tbody", book.map(function (item) {
-                return m("tr", [
-                    m("td", item.word),
-                    m("td", item.annotation),
-                    m("td", item.examples)
-                ])
-            }))
-        ])
+            }),
+            m("button.button", { onclick: getNewFileHandle }, "Export"),
+        ]) 
     }
+}
+
+async function getNewFileHandle(e) {
+    e.preventDefault();
+    
+    let markdown = "Hello world"
+
+    const url = URL.createObjectURL(new Blob([markdown], {
+      type: "text/markdown;charset=utf-8"
+    }));
+    
+    const id = await chrome.downloads.download({
+        url: url,
+        filename: "vocabulary.md",
+        saveAs: false
+      });
+    
+    window.close()
 }
 
 m.route(root, "/list", {
@@ -71,7 +90,9 @@ function pageGetSelect() {
     return window.getSelection().toString()
 }
 
-(async function () {
+(async () => {
+    console.log("init")
+
     const activeTabId = await getActiveTabId();
     const results = await chrome.scripting.executeScript({
             target: { tabId: activeTabId },
@@ -82,14 +103,14 @@ function pageGetSelect() {
     if (str && str.length > 0) {
         str = str.trim()
         if (str.includes(" ")) {
-            examples = str.trim().substr(0, 200)
+            form.examples = str.trim().substr(0, 200)
         } else {
-            word = str.trim()
+            form.term = str.trim()
         }
         m.route.set('/add')
+    } else {
+        let results = await chrome.storage.local.get(["terms"])
+        terms = results.terms || []
+        m.route.set("/list")
     }
-})();
-
-window.onload = () => {
-    console.log("Page loaded")
-}
+})()
