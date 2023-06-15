@@ -2,7 +2,9 @@ let root = document.body
 let terms = []
 let form = { term: "", desc: "", examples: "" } 
 
-var AddNew = {
+import getSelectText from "./selection.js";
+
+var AddTerm = {
     view: function() {
         return m("form.container", {
             onsubmit: function(e) {
@@ -51,28 +53,65 @@ var AddNew = {
 var ShowList = {
     view: function() {
         return m("div.container", [
-            terms.map(function (item) {
+            terms.toReversed().map(function (item, idx) {
                 return m("div.card", [
                     m(".float-right", [
-                        m("a", { href: "#!/edit" }, [
+                        m("a", { href: "#!/edit/" + idx }, [
                             m("i", { class: "fa fa-edit" })
                         ])
                     ]),
-                    m("div.card-title", item.term),
-                    m("div.card-sub", item.desc),
+                    m("span.card-title", item.term),
+                    item.desc ? m("span.card-sub", "("+ item.desc + ")") : m("span"),
                     m("div.card-text", item.examples)
                 ])
             }),
             m("button.button", { onclick: getNewFileHandle }, "Export"),
         ]) 
     }
-}
+};
 
 var EditTerm = {
-    view: function() {
-        return m("button.button", { class: "button-danger"})
+    view: function(vnode) {
+
+        console.log(vnode.attrs)
+        form = terms[vnode.attrs.idx]
+
+        return m("form.container", [
+            m("fieldset", [ 
+                m("label", "Term"),
+                m("input.input[type=text][name=term]", {
+                    value: form.term,
+                    oninput: function(e) { form.term = e.target.value }
+                } ),
+                m("label", "Desc"),             
+                m("input[type=text][name=desc]", {
+                        value: form.desc,
+                        oninput: function(e) { form.desc = e.target.value }
+                    }),
+                m("label", "Examples"),
+                m("textarea[rows=5][cols=20][name=examples]", {
+                    value: form.examples,
+                    oninput: function(e) { form.examples = e.target.value }
+                }),
+                m(".float-right", [
+                    m("button[type=button]", { class: "button button-danger", onclick: function (e) {
+                        e.preventDefault();
+                        
+                    }}, "Delete")
+                ]),
+                m("button[type=button]", { class: "button button-outline", onclick: function (e) {
+                    e.preventDefault();
+                    if (! form.term) {
+                        alert("Term must be not empty.")
+                        return
+                    }
+                    terms[vnode.attrs.idx] = form
+                    chrome.storage.local.set({ "terms" : terms }).then(m.route.set("/list"))                    
+                }}, "Save")
+            ])
+        ])
     }
-}
+};
 
 async function getNewFileHandle(e) {
     e.preventDefault();
@@ -94,41 +133,29 @@ async function getNewFileHandle(e) {
 
 m.route(root, "/list", {
     "/list": ShowList,
-    "/add": AddNew,
-    "/edit": EditTerm
-})
+    "/add" : AddTerm,
+    "/edit/:idx": EditTerm
+});
 
-async function getActiveTabId() {
-    let queryOptions = { active: true, currentWindow: true };
-    let [tab] = await chrome.tabs.query(queryOptions);
-    return tab.id;
-}
-
-function pageGetSelect() {
-    return window.getSelection().toString()
-}
 
 (async () => {
-    console.log("init")
 
-    const activeTabId = await getActiveTabId();
-    const results = await chrome.scripting.executeScript({
-            target: { tabId: activeTabId },
-            func: pageGetSelect,
-        })
+    let str = await getSelectText()
 
-    let str = results[0].result
-    if (str && str.length > 0) {
-        str = str.trim()
-        if (str.includes(" ")) {
-            form.examples = str.trim().substr(0, 200)
+    if (str) {
+
+        if (str.includes(" ") || str.includes("\u00a0")) {
+            form.examples = str
         } else {
-            form.term = str.trim()
+            form.term = str
         }
         m.route.set('/add')
+
     } else {
+
         let results = await chrome.storage.local.get(["terms"])
         terms = results.terms || []
+
         m.route.set("/list")
     }
 })()

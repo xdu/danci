@@ -15,5 +15,7 @@
         "scripting",
         "storage",
         "downloads"
+    ],
+    "host_permissions" : [
     ]
 }

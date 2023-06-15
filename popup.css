@@ -51,6 +51,7 @@ form, input, textarea {
 
 .card-sub {
   color: #8c8c8c;
+  padding-left: 5px;
   font-size: 0.9em;
   letter-spacing: 1px;
 }
