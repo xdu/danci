@@ -15,7 +15,7 @@ var AddTerm = {
                 }
                 chrome.storage.local.get(["terms"]).then((results) => {
                     terms = results.terms || []
-                    terms.push(form)
+                    terms.unshift(form)
                     chrome.storage.local.set({ "terms" : terms })
                 }).then(() => {
                     m.route.set("/list")
@@ -53,7 +53,7 @@ var AddTerm = {
 var ShowList = {
     view: function() {
         return m("div.container", [
-            terms.toReversed().map(function (item, idx) {
+            terms.map(function (item, idx) {
                 return m("div.card", [
                     m(".float-right", [
                         m("a", { href: "#!/edit/" + idx }, [
@@ -96,7 +96,8 @@ var EditTerm = {
                 m(".float-right", [
                     m("button[type=button]", { class: "button button-danger", onclick: function (e) {
                         e.preventDefault();
-                        
+                        terms.splice(vnode.attrs.idx, 1)
+                        chrome.storage.local.set({ "terms" : terms }).then(m.route.set("/list"))
                     }}, "Delete")
                 ]),
                 m("button[type=button]", { class: "button button-outline", onclick: function (e) {
