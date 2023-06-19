@@ -107,7 +107,7 @@ var EditTerm = {
                         return
                     }
                     terms[vnode.attrs.idx] = form
-                    chrome.storage.local.set({ "terms" : terms }).then(m.route.set("/list"))                    
+                    chrome.storage.local.set({ "terms" : terms }).then(m.route.set("/list"))
                 }}, "Save")
             ])
         ])
@@ -117,9 +117,13 @@ var EditTerm = {
 async function getNewFileHandle(e) {
     e.preventDefault();
     
-    let markdown = "Hello world"
+    let md = terms.map((item) =>{
+        let str = "####" + item.term + "####" + "\r\n"
+        str = str + "- " + item.desc + "\r\n"
+        str = str + "- " + item.examples + "\r\n"
+    }).concat("\r\n")
 
-    const url = URL.createObjectURL(new Blob([markdown], {
+    const url = URL.createObjectURL(new Blob([md], {
       type: "text/markdown;charset=utf-8"
     }));
     
