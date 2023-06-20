@@ -52,21 +52,31 @@ var AddTerm = {
 
 var ShowList = {
     view: function() {
-        return m("div.container", [
-            terms.map(function (item, idx) {
-                return m("div.card", [
-                    m(".float-right", [
-                        m("a", { href: "#!/edit/" + idx }, [
-                            m("i", { class: "fa fa-edit" })
-                        ])
+        if (terms.length > 0) {
+            return m("div.container", [
+                terms.map(function (item, idx) {
+                    return m("div.card", [
+                        m(".float-right", [
+                            m("a", { href: "#!/edit/" + idx }, [
+                                m("i", { class: "fa fa-edit" })
+                            ])
+                        ]),
+                        m("span.card-title", item.term),
+                        item.desc ? m("span.card-sub", "("+ item.desc + ")") : m("span"),
+                        m("div.card-text", item.examples)
+                    ])
+                }),
+                m("button[type=button].button", { onclick: getNewFileHandle }, "Export"),
+                m(".float-right", [
+                        m("button[type=button]", { class: "button button-danger", onclick: function (e) {
+                            terms = []
+                            chrome.storage.local.set({ "terms" : terms }).then(m.route.set("/list"))
+                        }}, "Clear")
                     ]),
-                    m("span.card-title", item.term),
-                    item.desc ? m("span.card-sub", "("+ item.desc + ")") : m("span"),
-                    m("div.card-text", item.examples)
-                ])
-            }),
-            m("button.button", { onclick: getNewFileHandle }, "Export"),
-        ]) 
+            ]) 
+        } else {
+            return m("div.container", [m("div", "Vocabulary List is Empty.")])
+        }
     }
 };
 
