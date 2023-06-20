@@ -1,8 +1,11 @@
 {
     "manifest_version": 3,
     "name": "Vocabulary Book",
-    "description": "Vocabulary Book",
+    "description": "Vocabulary Book will help you improve your language level by taking note on new words that you encounter when you are browsing web pages.",
     "version": "1.0",
+    "icons" : {
+        "48": "icon.png"
+    },
     "action": {
         "default_popup": "popup.html",
         "default_icon": "icon.png"
@@ -15,7 +18,4 @@
         "scripting",
         "storage",
         "downloads"
-    ],
-    "host_permissions" : [
     ]
-}
