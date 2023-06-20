@@ -28,18 +28,12 @@ var AddTerm = {
                     value: form.term,
                     oninput: function(e) { form.term = e.target.value }
                 } ),
-                m(".float-right", [
-                    m("button.button", [
-                        m("i", {class: "fa fa-google"}),
-                        m("#", "Translate")    
-                    ]),
-                ]),
-                m("label", "Desc"),             
+                m("label", "Hint"),             
                 m("input[type=text][name=desc]", {
                         value: form.desc,
                         oninput: function(e) { form.desc = e.target.value }
                     }),
-                m("label", "Examples"),
+                m("label", "Usage"),
                 m("textarea[rows=5][cols=20][name=examples]", {
                     value: form.examples,
                     oninput: function(e) { form.examples = e.target.value }
