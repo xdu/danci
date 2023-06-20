@@ -117,11 +117,16 @@ var EditTerm = {
 async function getNewFileHandle(e) {
     e.preventDefault();
     
-    let md = terms.map((item) =>{
-        let str = "####" + item.term + "####" + "\r\n"
-        str = str + "- " + item.desc + "\r\n"
-        str = str + "- " + item.examples + "\r\n"
-    }).concat("\r\n")
+    let md = terms.map((item) => {
+        let str = "#### " + item.term + " ####" + "\r\n";
+        if (item.desc) {
+            str = str + "*" + item.desc + "*\r\n";
+        }
+        if (item.examples) {
+            str = str + item.examples + "\r\n";
+        }
+        return str
+    }).join("\r\n");
 
     const url = URL.createObjectURL(new Blob([md], {
       type: "text/markdown;charset=utf-8"
@@ -132,8 +137,6 @@ async function getNewFileHandle(e) {
         filename: "vocabulary.md",
         saveAs: false
       });
-
-    window.close()
 }
 
 m.route(root, "/list", {
